@@ -1,0 +1,8 @@
+# Folders #
+data/
+
+# Compiled files #
+src/liblinear/*.o
+
+# Checkpoints #
+src/python/.ipynb_checkpoints/
