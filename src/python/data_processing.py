@@ -5,12 +5,14 @@
 
 # In[1]:
 
-import array, struct, sys, os, tqdm
-import numpy as np
+import time, array, struct, sys, os
+#import numpy as np
+
+print("Reading binaries")
 
 def read_binaries(path_binfiles):
     result = {}
-    for binfile in tqdm.tqdm(os.listdir(path_binfiles)):
+    for binfile in os.listdir(path_binfiles):
         if (binfile.split('.')[1] != 'bin'):
             continue
         pdbcode = binfile.split('.')[0]                     # name of file (pdbcode)
@@ -30,8 +32,9 @@ def read_binaries(path_binfiles):
 
 # In[2]:
 
+start_time = time.time()
 result = read_binaries('../../data/pdb/general-no2013_t14_t3_l7.0_g1.0_r1.0')
-
+print('--- %s seconds ---' % (time.time() - start_time))
 
 # In[3]:
 
@@ -72,17 +75,16 @@ Ki_data = []
 for item in Ki_values:
     Ki_data.append([item['value']] + result[item['name']])
 
-
 # ## Записываем матрицы признаков и ответов для refined 
 
 # In[8]:
 
-import time
 import numpy as np
 from math import log, exp
-from scipy.linalg import sqrtm, inv, norm
-from scipy.optimize import minimize
+#from scipy.linalg import sqrtm, inv, norm
+#from scipy.optimize import minimize
 
+print("Ki start")
 
 # ## Известны значения Ki
 # #### Путь: 
@@ -104,6 +106,7 @@ from scipy.optimize import minimize
 
 # In[9]:
 
+print("X_nat_train writing")
 start_time = time.time()
 data = Ki_data
 train = data[:int(len(data) * 0.6)]
@@ -139,6 +142,7 @@ np.savetxt('../../data/pdb/refined/ki/s_train.data', s_train)
 
 
 # In[12]:
+print("X_train writing")
 
 start_time = time.time()
 X_train = []
@@ -148,7 +152,7 @@ for i, t in enumerate(train):
     additional[i] = -1
     for pose in t[1:]:
         X_train.append(np.append(pose[1], additional))
-        
+       
 X_train = np.matrix(X_train).T
 
 y_train = []
@@ -174,6 +178,7 @@ np.savetxt('../../data/pdb/refined/ki/y_train.data', y_train)
 
 # In[35]:
 
+print("X_test writing")
 start_time = time.time()
 X_test = []
 for t in test:
@@ -195,11 +200,12 @@ print(X_test.shape)
 print(s_test.shape)
 
 
-# In[37]:
+# In[37]:i
 
 np.savetxt('../../data/pdb/refined/ki/X_test.data', X_test)
 np.savetxt('../../data/pdb/refined/ki/s_test.data', s_test)
 
+print("Kd start")
 
 # ## Известны значения Kd
 # #### Путь: 
@@ -212,7 +218,7 @@ np.savetxt('../../data/pdb/refined/ki/s_test.data', s_test)
 # $\texttt{s_train.data}$ - обучающая выборка из нативных комплексов (аффинности)
 # 
 # $\texttt{X_train.data}$ - обучающая выборка всех комплексов (признаки)
-# 
+#
 # $\texttt{y_train.data}$ - обучающа выборка всех комплексов (позы)
 # 
 # $\texttt{X_test.data}$ - тестовая выборка всех комплексов (признаки)
@@ -220,6 +226,8 @@ np.savetxt('../../data/pdb/refined/ki/s_test.data', s_test)
 # $\texttt{y_test.data}$ - тестовая выборка всех комплексов (позы)
 
 # In[39]:
+
+print("X_nat_train writing")
 
 start_time = time.time()
 data = Kd_data
@@ -251,6 +259,8 @@ np.savetxt('../../data/pdb/refined/kd/s_train.data', s_train)
 
 # In[40]:
 
+print("X_train writing")
+
 start_time = time.time()
 X_train = []
 for i, t in enumerate(train):
@@ -278,6 +288,8 @@ np.savetxt('../../data/pdb/refined/kd/y_train.data', y_train)
 
 
 # In[41]:
+
+print("X_test writing")
 
 start_time = time.time()
 X_test = []
